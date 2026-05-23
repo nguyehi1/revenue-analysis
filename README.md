@@ -1,120 +1,72 @@
-# ASC 606 Contract Analyzer
+# ASC 606 Revenue Recognition Calculator
 
-AI-powered prototype for analyzing SaaS contracts using ASC 606 revenue recognition standards.
+A Python + Streamlit tool for automated ASC 606 revenue recognition analysis. Combines deterministic Python math for calculations with Google Gemini AI for judgment-layer reasoning across all five ASC 606 steps.
 
-## Features
+## What It Does
 
-- Upload PDF contracts
-- AI-powered contract information extraction using Google Gemini
-- Complete ASC 606 analysis (all 5 steps)
-- Revenue recognition schedule generation
-- Interactive dashboard with PDF preview
-- **Edit contract details and obligations directly in the UI if extraction is incomplete or incorrect, then re-run the analysis with your changes**
-- Multi-obligation support: Handles contracts with multiple performance obligations and displays allocations in a styled, accessible table
-- Consistent, accessible UI: Custom dark theme, visually consistent tables, and primary action buttons
+- **Calculates** revenue recognition schedules, SSP-based allocation, variable consideration constraints, and contract asset / deferred revenue balances
+- **Reasons** through all five ASC 606 steps using Gemini AI, citing specific paragraph references (ASC 606-10-25-1, -10-32-11, etc.)
+- **Handles** common contract complexity: multi-POB bundles, usage-based pricing with tiers, variable consideration, contract modifications, and enterprise MSA hierarchies
 
-## Prerequisites
+## Architecture
 
-1. **Python 3.9+**
-2. **Google Gemini API Key** (free from Google AI Studio)
+| Layer | Responsibility |
+|---|---|
+| `utils/calculation_engine.py` | All deterministic math: SSP allocation, VC constraint, period schedules, contract asset / liability |
+| `utils/llm_judgments.py` | Gemini API calls for judgment: SSP estimation, VC constraint assessment, modification classification, 5-step narrative |
+| `app.py` | Streamlit UI: contract input, as-of date snapshot, 5-step reasoning cards |
+
+## Scenarios
+
+Seven example contracts covering the main ASC 606 patterns:
+
+| # | Vendor → Customer | Pattern |
+|---|---|---|
+| S1 | CloudHR → Pacific Dental Partners | Simple SaaS, single POB, straight-line |
+| S2 | Veridian ERP → Hartwell Manufacturing | Multi-POB: SaaS + Implementation + Training, SSP allocation |
+| S3 | DataStream Analytics → FinEdge Capital | Variable consideration, expected value method, constraint |
+| S4 | NexusPlatform → Meridian Retail Group | Contract modification (prospective new contract) |
+| S5 | PayRoute → SprintPay Technologies | Pure usage-based, tiered pricing at Uber/Lyft scale (12M tx/month) |
+| S6 | ToastPOS → Bella Cucina Restaurant Group | Hardware + SaaS + Support bundle, point-in-time + over-time |
+| S7 | Axiom Cloud → GlobalBank Corp. | Enterprise MSA, 3 Order Forms, volume discount material right |
 
 ## Setup
 
-### 1. Get Google Gemini API Key (Free)
-
-1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Click "Get API Key" or "Create API Key"
-3. Copy your API key (you'll enter it in the app)
-
-### 2. Install Python Dependencies
+**Requirements:** Python 3.10+, a Google Gemini API key ([get one free](https://aistudio.google.com/app/apikey))
 
 ```bash
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install packages
+# 1. Clone and install
+git clone https://github.com/nguyehi1/Rev_Analysis.git
+cd Rev_Analysis
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-```
 
-### 3. (Optional) Set Up Environment Variables
-
-```bash
-# Copy the example environment file
+# 2. Add your Gemini API key
 cp .env.example .env
+# Edit .env and set: GEMINI_API_KEY=your-key-here
 
-# Edit .env and add your Gemini API key
-# GEMINI_API_KEY=your_actual_api_key_here
-```
-
-Alternatively, you can enter your API key directly in the app when prompted.
-
-## Running the App
-
-```bash
+# 3. Run
 streamlit run app.py
 ```
 
-The app will open in your browser at `http://localhost:8501`
-
 ## Usage
 
-1. Provide your Google Gemini API key via environment variable `GEMINI_API_KEY` or enter it in the app when prompted.
-2. Upload a SaaS contract PDF (max 20MB).
-3. Click **Analyze Contract with AI** to extract key terms and run the ASC 606 analysis in one step.
-4. Review contract details, the 5 ASC 606 steps, and the generated revenue schedule.
-5. If any contract details are missing or incorrect, click **Edit Details** in the Contract Details tab, update fields and obligations as needed, then click **Save and re-run analysis** to update the revenue schedule and analysis.
-6. Optionally, download the revenue schedule as CSV.
+1. Open the app at `http://localhost:8501`
+2. In the **Load Example** tab, select a scenario (S1–S7) and click **Load & Calculate**
+3. The right panel shows:
+   - **As-of date snapshot**: revenue recognized to date, deferred revenue, contract asset, remaining
+   - **5-step ASC 606 cards**: Python-calculated facts + Gemini AI narrative per step
+   - **Balance Sheet & Journal Entries**: collapsed section with charts and per-period entries
+4. Alternatively, use the **Build Contract** tab to enter a custom contract
 
-## Tech Stack
+## How the Hybrid Model Works
 
-- **Frontend**: Streamlit
-- **LLM**: Google Gemini 2.0 Flash (free tier)
-- **PDF Processing**: pdfplumber
-- **Visualization**: Plotly
+**Python handles all math** — allocation ratios, monthly schedules, running balances — so results are deterministic and auditable.
 
-## Project Structure
+**Gemini handles judgment** — the things that require professional interpretation:
+- Estimating SSP when not directly observable
+- Assessing whether variable consideration should be constrained
+- Classifying contract modification type
+- Writing the 5-step narrative with ASC 606 paragraph citations
 
-```
-Rev_Analysis/
-├── app.py                     # Main Streamlit application (single-page UI)
-├── assets/
-│   └── styles.css             # Custom Uber-like dark theme
-├── utils/
-│   ├── __init__.py            # Module exports
-│   ├── pdf_extractor.py       # PDF text extraction (pdfplumber)
-│   ├── llm_analyzer.py        # Gemini LLM integration with logging
-│   └── asc606_engine.py       # Revenue schedule generation
-├── data/
-│   └── contracts/             # Uploaded PDFs (temporary, gitignored)
-├── requirements.txt           # Python dependencies
-├── .gitignore                 # Git exclusions
-├── ASC_606_GUIDE.md           # Comprehensive ASC 606 reference
-└── README.md                  # This file
-```
-
-## Customization
-
-### Editing LLM Prompts
-
-The prompt for contract analysis is in `utils/llm_analyzer.py` in the `extract_and_analyze_combined()` function. You can modify the prompt string to:
-- Add or remove fields
-- Adjust instructions or analysis focus
-- Change the JSON output structure
-
-Restart the app after editing to use the updated prompt.
-
-### Styling
-
-The UI theme is in `assets/styles.css`. Customize colors, spacing, and components to match your brand.
-
-## Google Gemini Free Tier
-
-- **15 requests per minute** (RPM)
-- **1 million tokens per minute** (TPM)
-- **1,500 requests per day** (RPD)
-- Perfect for prototype testing!
-
-## License
-
-Prototype for demonstration purposes only. Not for production use.
+The AI reasoning is generated automatically when you click **Load & Calculate**.

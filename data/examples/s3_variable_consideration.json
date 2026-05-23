@@ -1,0 +1,53 @@
+{
+  "contract_id": "C-003",
+  "vendor": "DataStream Analytics",
+  "customer": "FinEdge Capital LLC",
+  "industry": "Financial Technology / Hedge Funds",
+  "scenario_summary": "Quantitative hedge fund accesses DataStream's real-time market data and alternative data API. Fixed SaaS base covers 1M API calls/month; calls above that threshold are billed at $0.01/call. The overage is variable consideration estimated by expected value and constrained under ASC 606-10-32-11.",
+
+  "start_date": "2026-01-01",
+  "end_date": "2026-12-31",
+  "currency": "USD",
+  "total_contract_value": 120000,
+
+  "performance_obligations": [
+    {
+      "id": "POB-1",
+      "name": "Market Data SaaS (Base)",
+      "description": "12-month access to DataStream's real-time equities, options, and alternative data feeds. Includes up to 1,000,000 API calls per month. FinEdge's quant models poll the API continuously during market hours. Fixed monthly fee of $10,000.",
+      "recognition_type": "over_time",
+      "recognition_params": { "method": "straight_line" },
+      "ssp": { "amount": 120000, "source": "observable", "basis": "$10,000/month list price for the Standard Quant tier (up to 1M calls/month)" }
+    },
+    {
+      "id": "POB-2",
+      "name": "API Call Overage",
+      "description": "Additional API calls above the 1M/month included threshold, billed at $0.01 per call. FinEdge is expanding its crypto and FX data consumption; overage is likely but the amount depends on strategy roll-out timing and market conditions.",
+      "recognition_type": "usage_based",
+      "recognition_params": {
+        "unit_price": 0.01,
+        "unit": "api_call",
+        "included_units_per_period": 1000000
+      },
+      "ssp": { "amount": null, "source": "residual" }
+    }
+  ],
+
+  "variable_consideration": {
+    "pob_id": "POB-2",
+    "estimation_method": "expected_value",
+    "description": "FinEdge is a mid-size quant fund expanding into crypto arbitrage strategies that will increase API consumption. Q3 strategy launch may spike usage significantly. Historical overage at comparable funds averages $10k–$20k/year. Constraint applied to base scenario.",
+    "scenarios": [
+      { "label": "low",  "annual_amount": 0,     "probability": 0.25, "_note": "Strategy launch delayed; no overage" },
+      { "label": "base", "annual_amount": 15000, "probability": 0.50, "_note": "Crypto strategy live H2; ~1.5M extra calls/month in Q3–Q4" },
+      { "label": "high", "annual_amount": 40000, "probability": 0.25, "_note": "Full crypto + FX rollout; ~4M extra calls/month year-round" }
+    ],
+    "constrained_amount": 15000,
+    "_constraint_rationale": "High scenario is possible but not probable at signing — crypto strategy is still in development. Constrain to base ($15k) per ASC 606-10-32-11: including the high scenario would create a probable significant reversal risk."
+  },
+
+  "payment_schedule": [
+    { "invoice_date": "2026-01-01", "amount": 120000, "_note": "Annual base fee invoiced upfront" },
+    { "invoice_date": "2026-12-31", "amount": "variable", "estimated": 15000, "_note": "Overage billed in arrears at year-end based on actuals" }
+  ]
+}

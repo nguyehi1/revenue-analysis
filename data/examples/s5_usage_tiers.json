@@ -1,0 +1,109 @@
+{
+  "contract_id": "C-005",
+  "vendor": "PayRoute Processing Corp.",
+  "customer": "SprintPay Technologies",
+  "industry": "Ride-Hailing / Mobile Payments",
+  "scenario_summary": "Ride-hailing platform (Uber / Lyft comparable scale) contracts per-transaction payment processing with PayRoute. No monthly base fee — 100% variable. Three pricing tiers reward high volume: $0.0100/transaction up to 5M, $0.0075 for 5M–20M, $0.0050 above 20M. SprintPay processed ~12M transactions/month in the prior year. Revenue recognized as each transaction is processed per ASC 606-10-55-18.",
+
+  "start_date": "2026-01-01",
+  "end_date": "2026-12-31",
+  "currency": "USD",
+  "total_contract_value": 0,
+  "_note_on_tcv": "TCV is $0 at inception — all consideration is variable. The constrained VC estimate ($1,230,000 annual) is used for balance-sheet and disclosure purposes.",
+
+  "performance_obligations": [
+    {
+      "id": "POB-1",
+      "name": "Payment Processing API",
+      "description": "Per-transaction payment authorisation, capture, and settlement API. SprintPay calls the API for every rider charge, driver payout, tip, and refund processed through its iOS/Android apps. No minimum commitment — SprintPay pays only for volume processed.",
+      "recognition_type": "usage_based",
+      "recognition_params": {
+        "pricing_tiers": [
+          {
+            "from_units": 0,
+            "to_units": 5000000,
+            "unit_price": 0.0100,
+            "label": "Tier 1 — Standard (0–5M transactions/month)"
+          },
+          {
+            "from_units": 5000000,
+            "to_units": 20000000,
+            "unit_price": 0.0075,
+            "label": "Tier 2 — Growth (5M–20M transactions/month)"
+          },
+          {
+            "from_units": 20000000,
+            "to_units": null,
+            "unit_price": 0.0050,
+            "label": "Tier 3 — Enterprise (20M+ transactions/month)"
+          }
+        ],
+        "unit": "transaction",
+        "billing_frequency": "monthly_actuals",
+        "_tier_rationale": "Tier 1 covers standard merchant volumes; Tier 2 matches SprintPay's current run-rate; Tier 3 activates during peak seasons (New Year's Eve, major sporting events) when surge pricing drives transaction spikes."
+      },
+      "ssp": { "amount": null, "source": "residual" }
+    }
+  ],
+
+  "variable_consideration": {
+    "pob_id": "POB-1",
+    "estimation_method": "expected_value",
+    "description": "SprintPay averaged 11.2M transactions/month over the prior 12 months. Management projects modest growth from new market launches in 3 cities (Q3). Holiday and events season (Nov–Dec) historically adds 25–40% volume. Constraint applied to base scenario to avoid reversal risk from the high scenario.",
+    "monthly_scenarios": [
+      {
+        "label": "low",
+        "comment": "Market expansion delayed; volume retreats to 3M transactions/month (Tier 1 only)",
+        "monthly_units": 3000000,
+        "monthly_amount": 30000,
+        "_math": "3,000,000 × $0.0100 = $30,000",
+        "probability": 0.15
+      },
+      {
+        "label": "base",
+        "comment": "Consistent with prior-year run-rate; 12M transactions spans Tiers 1 and 2",
+        "monthly_units": 12000000,
+        "monthly_amount": 102500,
+        "_math": "5,000,000 × $0.0100 + 7,000,000 × $0.0075 = $50,000 + $52,500 = $102,500",
+        "probability": 0.60
+      },
+      {
+        "label": "high",
+        "comment": "3-city expansion + strong holiday surge; 25M transactions reaches Tier 3",
+        "monthly_units": 25000000,
+        "monthly_amount": 187500,
+        "_math": "5,000,000 × $0.0100 + 15,000,000 × $0.0075 + 5,000,000 × $0.0050 = $50,000 + $112,500 + $25,000 = $187,500",
+        "probability": 0.25
+      }
+    ],
+    "_ev_math": "0.15 × $30,000 + 0.60 × $102,500 + 0.25 × $187,500 = $4,500 + $61,500 + $46,875 = $112,875/month",
+    "unconstrained_expected_monthly": 112875,
+    "constrained_monthly": 102500,
+    "constrained_annual": 1230000,
+    "_constraint_rationale": "City expansion is unexecuted at contract signing; high scenario not yet probable. Constraining to base ($102,500/month) per ASC 606-10-32-11 avoids recognising the $85,000/month incremental revenue that is subject to probable significant reversal."
+  },
+
+  "payment_schedule": [
+    { "invoice_date": "2026-01-31", "amount": "variable", "estimated": 102500, "_note": "Billed monthly in arrears on actuals" },
+    { "invoice_date": "2026-02-28", "amount": "variable", "estimated": 102500 },
+    { "invoice_date": "2026-03-31", "amount": "variable", "estimated": 102500 },
+    { "invoice_date": "2026-04-30", "amount": "variable", "estimated": 102500 },
+    { "invoice_date": "2026-05-31", "amount": "variable", "estimated": 102500 },
+    { "invoice_date": "2026-06-30", "amount": "variable", "estimated": 102500 },
+    { "invoice_date": "2026-07-31", "amount": "variable", "estimated": 102500 },
+    { "invoice_date": "2026-08-31", "amount": "variable", "estimated": 102500 },
+    { "invoice_date": "2026-09-30", "amount": "variable", "estimated": 102500 },
+    { "invoice_date": "2026-10-31", "amount": "variable", "estimated": 102500 },
+    { "invoice_date": "2026-11-30", "amount": "variable", "estimated": 102500 },
+    { "invoice_date": "2026-12-31", "amount": "variable", "estimated": 102500 }
+  ],
+
+  "_key_asc606_considerations": [
+    "Revenue recognised as each transaction is processed — the fee relates specifically to PayRoute's distinct act of authorising and settling that payment (ASC 606-10-55-18 usage-based analogy).",
+    "No contract asset or liability: SprintPay is invoiced monthly on actuals, so billings coincide with recognition; balance stays near zero each month.",
+    "VC constraint must be reassessed at each reporting period as new transaction data arrives; if actuals consistently exceed base scenario, cumulative catch-up adjustment is recognised in that period.",
+    "Tiered pricing creates a non-linear revenue curve — incremental rate drops 50% when SprintPay crosses 20M transactions, so the Tier 3 savings are a meaningful incentive for volume growth.",
+    "If SprintPay launches in a new country mid-contract, assess whether the new territory constitutes a modification (new separate contract vs. expanded scope of original POB).",
+    "Disclosure: significant judgement in VC constraint selection; disclose the range of outcomes ($360k–$2.25M annual) and the constraint rationale per ASC 606-10-50-20."
+  ]
+}

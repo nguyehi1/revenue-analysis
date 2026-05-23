@@ -1,0 +1,195 @@
+{
+  "contract_id": "C-007",
+  "vendor": "Axiom Cloud Platform Inc.",
+  "customer": "GlobalBank Corp.",
+  "industry": "Banking / Financial Services",
+  "scenario_summary": "Top-20 US commercial bank signs a 3-year MSA with Axiom for core banking cloud migration. Three annual Order Forms grow in scope and seat count. Volume-based discount tiers create a material right in OF-1 that is recognised when OF-2 exercises the discount. Key accounting questions: contract combination, material right valuation, and modification accounting as each Order Form is added.",
+
+  "master_agreement": {
+    "msa_id": "MSA-001",
+    "vendor": "Axiom Cloud Platform Inc.",
+    "customer": "GlobalBank Corp.",
+    "industry": "Banking / Financial Services",
+    "effective_date": "2025-01-01",
+    "term": "3 years (2025–2027)",
+    "volume_discount_schedule": [
+      { "cumulative_spend_threshold": 0,        "discount_pct": 0.00 },
+      { "cumulative_spend_threshold": 500000,   "discount_pct": 0.05 },
+      { "cumulative_spend_threshold": 1000000,  "discount_pct": 0.10 },
+      { "cumulative_spend_threshold": 2000000,  "discount_pct": 0.15 }
+    ],
+    "_discount_note": "Discounts apply to future Order Forms once cumulative MSA spend crosses each threshold. A customer who had not signed the MSA would not receive these discounts — the contractual right to future discounts is a material right under ASC 606-10-55-42."
+  },
+
+  "order_forms": [
+    {
+      "contract_id": "C-007-OF1",
+      "order_form": "OF-1",
+      "signed_date": "2025-01-01",
+      "start_date": "2025-01-01",
+      "end_date": "2025-12-31",
+      "currency": "USD",
+      "total_contract_value": 600000,
+      "cumulative_msa_spend_at_signing": 0,
+      "applicable_discount_pct": 0,
+
+      "performance_obligations": [
+        {
+          "id": "POB-1",
+          "name": "Core Banking Platform — Year 1",
+          "description": "Annual enterprise cloud banking platform licence for 500 bank employees (relationship managers, loan officers, retail operations). Includes core banking ledger, payments hub, and regulatory reporting modules. GlobalBank simultaneously receives and consumes the service as Axiom operates the platform.",
+          "recognition_type": "over_time",
+          "recognition_params": { "method": "straight_line" },
+          "ssp": { "amount": 550000, "source": "observable", "basis": "$1,100/seat/year × 500 seats (list price for enterprise banking tier)" }
+        },
+        {
+          "id": "POB-2",
+          "name": "Volume Discount Material Right",
+          "description": "GlobalBank's contractual right to purchase future Order Forms at a 5% discount once cumulative MSA spend exceeds $500k. This discount is incremental to what GlobalBank would receive as a new customer — it constitutes a material right (separate POB) under ASC 606-10-55-42. Recognised when GlobalBank exercises the right (places OF-2) or when the right expires.",
+          "recognition_type": "point_in_time",
+          "recognition_params": {
+            "event": "customer_exercises_or_option_expires",
+            "estimated_completion_date": "2025-12-31"
+          },
+          "ssp": {
+            "amount": 50000,
+            "source": "estimated",
+            "_method": "Probability-weighted expected value of future discount: 85% probability OF-2 is placed × estimated OF-2 TCV $800k × 5% discount = 0.85 × $40,000 = $34,000. Adjusted upward to $50,000 for estimated OF-3 discount participation.",
+            "basis": "Probability-weighted future discount value"
+          }
+        }
+      ],
+
+      "_ssp_note": "SSP total = $600,000 = TCV. No bundle discount in OF-1; the material right POB is separately valued and allocated from the $600k TCV.",
+
+      "payment_schedule": [
+        { "invoice_date": "2025-01-01", "amount": 600000, "_note": "Year 1 annual fee invoiced upfront on contract signing" }
+      ]
+    },
+
+    {
+      "contract_id": "C-007-OF2",
+      "order_form": "OF-2",
+      "signed_date": "2026-01-01",
+      "start_date": "2026-01-01",
+      "end_date": "2026-12-31",
+      "currency": "USD",
+      "total_contract_value": 760000,
+      "_gross_before_discount": 800000,
+      "cumulative_msa_spend_at_signing": 600000,
+      "applicable_discount_pct": 0.05,
+
+      "_modification_accounting": "OF-2 is a new separate contract (not a modification of OF-1 — negotiated independently at different time with different scope). Cumulative spend of $600k triggers the 5% tier. The $40k discount represents GlobalBank exercising the material right from OF-1. Recognise any remaining deferred material right balance at OF-2 execution.",
+
+      "performance_obligations": [
+        {
+          "id": "POB-1",
+          "name": "Core Banking Platform — Year 2 (Expanded)",
+          "description": "Annual licence renewal expanded to 600 seats (500 original + 100 new commercial lending team added following GlobalBank's acquisition of a regional bank). Includes all Year 1 modules plus newly licensed Trade Finance and Letters of Credit module.",
+          "recognition_type": "over_time",
+          "recognition_params": { "method": "straight_line" },
+          "ssp": { "amount": 660000, "source": "observable", "basis": "$1,100/seat × 600 seats" }
+        },
+        {
+          "id": "POB-2",
+          "name": "AI-Powered Risk & Compliance Add-on",
+          "description": "12-month access to Axiom's ML-based transaction monitoring, AML screening, and CECL credit loss forecasting modules. GlobalBank's compliance team requires this following new FinCEN requirements effective Jan 2026.",
+          "recognition_type": "over_time",
+          "recognition_params": { "method": "straight_line" },
+          "ssp": { "amount": 140000, "source": "adjusted_market", "basis": "Adjusted market assessment based on comparable AML/compliance SaaS products ($100k–$180k/year for similar bank size); midpoint $140k" }
+        }
+      ],
+
+      "_ssp_allocation": {
+        "total_ssp": 800000,
+        "tcv_after_discount": 760000,
+        "discount_applied": 40000,
+        "_note": "5% discount on $800k gross = $40k. Allocated proportionally across POB-1 and POB-2.",
+        "allocated": {
+          "POB-1": "760,000 × (660,000 / 800,000) = $627,000",
+          "POB-2": "760,000 × (140,000 / 800,000) = $133,000"
+        }
+      },
+
+      "payment_schedule": [
+        { "invoice_date": "2026-01-01", "amount": 380000, "_note": "50% on OF-2 signing" },
+        { "invoice_date": "2026-07-01", "amount": 380000, "_note": "50% at 6-month mark" }
+      ]
+    },
+
+    {
+      "contract_id": "C-007-OF3",
+      "order_form": "OF-3",
+      "signed_date": "2027-01-01",
+      "start_date": "2027-01-01",
+      "end_date": "2027-12-31",
+      "currency": "USD",
+      "total_contract_value": 1080000,
+      "_gross_before_discount": 1200000,
+      "cumulative_msa_spend_at_signing": 1360000,
+      "applicable_discount_pct": 0.10,
+
+      "_modification_accounting": "Cumulative spend of $1.36M crosses the $1M threshold — 10% discount tier. OF-3 is a new separate contract. Remaining deferred material right balance from OF-1 (if not fully recognised at OF-2) is recognised at OF-3 execution.",
+
+      "performance_obligations": [
+        {
+          "id": "POB-1",
+          "name": "Core Banking Platform — Year 3 (Full Enterprise)",
+          "description": "Annual licence for 800 seats following GlobalBank's second acquisition (a mid-size credit union, +200 seats). All prior modules plus newly licensed Open Banking API gateway supporting PSD2/Open Banking compliance for GlobalBank's digital subsidiary.",
+          "recognition_type": "over_time",
+          "recognition_params": { "method": "straight_line" },
+          "ssp": { "amount": 880000, "source": "observable", "basis": "$1,100/seat × 800 seats" }
+        },
+        {
+          "id": "POB-2",
+          "name": "AI Risk & Compliance (Year 2 Renewal)",
+          "description": "12-month renewal of the AML, transaction monitoring, and CECL modules. Expanded to cover the acquired credit union's portfolio.",
+          "recognition_type": "over_time",
+          "recognition_params": { "method": "straight_line" },
+          "ssp": { "amount": 175000, "source": "adjusted_market", "basis": "Year 1 rate adjusted for expanded portfolio size (+25% seats = +25% price)" }
+        },
+        {
+          "id": "POB-3",
+          "name": "Cloud Migration Professional Services",
+          "description": "Four quarterly migration sprints moving GlobalBank's remaining on-premise core systems to Axiom Cloud. Each sprint is a distinct deliverable (migration of one business line: Retail, Commercial, Treasury, and Cards). Recognised at completion of each quarterly milestone.",
+          "recognition_type": "point_in_time",
+          "recognition_params": {
+            "milestones": [
+              { "name": "Q1 — Retail Banking Migration",     "estimated_completion_date": "2027-03-31", "value_pct": 0.25 },
+              { "name": "Q2 — Commercial Banking Migration", "estimated_completion_date": "2027-06-30", "value_pct": 0.25 },
+              { "name": "Q3 — Treasury Migration",           "estimated_completion_date": "2027-09-30", "value_pct": 0.25 },
+              { "name": "Q4 — Cards & Digital Migration",    "estimated_completion_date": "2027-12-31", "value_pct": 0.25 }
+            ]
+          },
+          "ssp": { "amount": 145000, "source": "expected_cost_plus_margin", "basis": "Estimated 4,000 consulting hours × $29/hour blended rate + 25% margin = ~$145,000" }
+        }
+      ],
+
+      "_ssp_allocation": {
+        "total_ssp": 1200000,
+        "tcv_after_discount": 1080000,
+        "discount_applied": 120000,
+        "_note": "10% discount on $1.2M gross = $120k. Allocated proportionally.",
+        "allocated": {
+          "POB-1": "1,080,000 × (880,000 / 1,200,000) = $792,000",
+          "POB-2": "1,080,000 × (175,000 / 1,200,000) = $157,500",
+          "POB-3": "1,080,000 × (145,000 / 1,200,000) = $130,500"
+        }
+      },
+
+      "payment_schedule": [
+        { "invoice_date": "2027-01-01", "amount": 540000, "_note": "50% on OF-3 signing" },
+        { "invoice_date": "2027-07-01", "amount": 540000, "_note": "50% at 6-month mark" }
+      ]
+    }
+  ],
+
+  "_key_asc606_considerations": [
+    "Contract combination: each OF was negotiated independently at a different time — no single commercial objective linking them at inception. Treated as separate contracts per ASC 606-10-25-9.",
+    "Material right in OF-1: the 5% volume discount GlobalBank earns on OF-2 is incremental to what any new customer would receive — a separate POB requiring allocation of a portion of OF-1 TCV (ASC 606-10-55-42).",
+    "When OF-2 is signed, GlobalBank exercises the material right — recognise the deferred material right balance from OF-1. If OF-2 had not been placed, the balance would be recognised at OF-1 expiry.",
+    "Professional services milestones in OF-3 are distinct POBs only if each migration sprint can be used independently. If the sprints are highly interdependent (each depends on the prior), they may be a single POB recognised as one performance obligation.",
+    "Significant financing component: 6-month payment lag in OF-2 and OF-3 is within the 12-month practical expedient per ASC 606-10-32-18 — no adjustment needed.",
+    "Disclosure: the MSA creates variable future consideration (unknown OF-2 and OF-3 scope at OF-1 signing). Entity must disclose remaining performance obligations and the transaction price allocated to them under ASC 606-10-50-13."
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "contract_id": "C-004",
+  "vendor": "NexusPlatform Inc.",
+  "customer": "Meridian Retail Group",
+  "industry": "Omnichannel Retail",
+  "scenario_summary": "250-store omnichannel retailer runs its e-commerce and inventory platform on NexusPlatform. Six months into the 24-month contract, Meridian adds a Premium Analytics module at the standalone price — treated as a prospective new contract modification per ASC 606-10-25-12(a) because it adds distinct new services at their standalone selling price.",
+
+  "start_date": "2025-07-01",
+  "end_date": "2027-06-30",
+  "currency": "USD",
+  "total_contract_value": 240000,
+
+  "performance_obligations": [
+    {
+      "id": "POB-1",
+      "name": "E-Commerce & Inventory Platform",
+      "description": "24-month access to NexusPlatform's omnichannel SaaS covering online storefront, in-store inventory management, order routing, and customer data platform for Meridian's 250 retail locations. Recognized straight-line over the 24-month term.",
+      "recognition_type": "over_time",
+      "recognition_params": { "method": "straight_line" },
+      "ssp": { "amount": 240000, "source": "observable", "basis": "$10,000/month standalone rate for Enterprise Omnichannel tier (201–500 stores)" }
+    }
+  ],
+
+  "payment_schedule": [
+    { "invoice_date": "2025-07-01", "amount": 120000, "_note": "Year 1 fee invoiced on contract start" },
+    { "invoice_date": "2026-07-01", "amount": 120000, "_note": "Year 2 fee invoiced at 12-month anniversary" }
+  ],
+
+  "modifications": [
+    {
+      "modification_id": "MOD-1",
+      "effective_date": "2026-01-01",
+      "description": "Meridian adds the Premium Analytics module — real-time basket analysis, store-level P&L dashboards, and demand forecasting powered by ML models. Priced at $5,000/month standalone, the same rate NexusPlatform charges all standalone analytics customers. Added for the remaining 18 months of the original term.",
+      "modification_type": "prospective_new_contract",
+      "_classification_rationale": "Distinct new service (analytics module can be used independently of e-commerce functions; Meridian could purchase it from a third party) and priced at standalone selling price → separate contract per ASC 606-10-25-12(a). No reallocation of original contract.",
+      "delta_contract_value": 30000,
+      "new_performance_obligations": [
+        {
+          "id": "POB-2",
+          "name": "Premium Analytics Module",
+          "description": "Real-time sales analytics, store P&L dashboards, and ML-driven demand forecasting add-on. 6-month term (Jan–Jun 2026). Recognized straight-line.",
+          "recognition_type": "over_time",
+          "recognition_params": { "method": "straight_line" },
+          "ssp": { "amount": 30000, "source": "observable", "basis": "$5,000/month standalone analytics rate × 6 months" },
+          "start_date": "2026-01-01",
+          "end_date": "2026-06-30"
+        }
+      ],
+      "additional_payment": [
+        { "invoice_date": "2026-01-01", "amount": 30000, "_note": "Analytics module invoiced upfront on modification effective date" }
+      ]
+    }
+  ]
+}

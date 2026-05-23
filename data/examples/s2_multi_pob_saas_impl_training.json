@@ -1,0 +1,50 @@
+{
+  "contract_id": "C-002",
+  "vendor": "Veridian ERP Solutions",
+  "customer": "Hartwell Manufacturing Co.",
+  "industry": "Industrial Manufacturing",
+  "scenario_summary": "1,200-employee precision parts manufacturer licenses Veridian's cloud ERP for 24 months. Bundle includes the SaaS license, a go-live implementation project (completed end of month 2), and day-1 on-site training — three distinct POBs requiring SSP-based allocation of the $200k bundled price.",
+
+  "start_date": "2025-07-01",
+  "end_date": "2027-06-30",
+  "currency": "USD",
+  "total_contract_value": 200000,
+
+  "performance_obligations": [
+    {
+      "id": "POB-1",
+      "name": "ERP SaaS License",
+      "description": "24-month access to Veridian cloud ERP (production planning, inventory, finance, HR modules) for up to 150 named users. Customer continuously receives benefit as Veridian operates and updates the platform.",
+      "recognition_type": "over_time",
+      "recognition_params": { "method": "straight_line" },
+      "ssp": { "amount": 144000, "source": "observable", "basis": "$6,000/month observable from standalone ERP license renewals at comparable customer size" }
+    },
+    {
+      "id": "POB-2",
+      "name": "Go-Live Implementation",
+      "description": "Data migration, system configuration, integrations with Hartwell's MES and warehouse systems, and user-acceptance testing. Veridian project team works on-site and remotely over ~8 weeks. Distinct from the license — Hartwell could contract any certified Veridian partner for implementation.",
+      "recognition_type": "point_in_time",
+      "recognition_params": {
+        "event": "customer_acceptance",
+        "estimated_completion_date": "2025-08-31"
+      },
+      "ssp": { "amount": 36000, "source": "adjusted_market", "basis": "Adjusted market assessment: comparable ERP implementation projects for similar-size manufacturers range $30k–$45k; midpoint $36k used" }
+    },
+    {
+      "id": "POB-3",
+      "name": "On-Site End-User Training",
+      "description": "3-day intensive training for 40 key users (floor managers, finance team, IT) delivered at Hartwell's Riverside facility on contract start. Training materials and recordings transferred to customer. Distinct — benefit fully consumed on delivery.",
+      "recognition_type": "point_in_time",
+      "recognition_params": {
+        "event": "delivery",
+        "estimated_completion_date": "2025-07-15"
+      },
+      "ssp": { "amount": 20000, "source": "expected_cost_plus_margin", "basis": "3 trainers × 3 days × $1,800/day blended rate + 25% margin + travel = ~$20,000" }
+    }
+  ],
+
+  "payment_schedule": [
+    { "invoice_date": "2025-07-01", "amount": 100000, "_note": "50% on contract signing" },
+    { "invoice_date": "2026-07-01", "amount": 100000, "_note": "50% at 12-month anniversary" }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "contract_id": "C-006",
+  "vendor": "ToastPOS Solutions",
+  "customer": "Bella Cucina Restaurant Group",
+  "industry": "Food & Beverage / Hospitality",
+  "scenario_summary": "35-location Italian restaurant chain bundles POS terminal hardware (sold outright, recognised on delivery), 24-month cloud POS software, and 24/7 support. The $85k bundled price is $5k below the sum of standalone SSPs ($80k → $85k TCV includes a premium; wait — TCV $85k vs SSP total $80k means TCV > SSP: bundle is priced at a 6.25% premium vs. standalone. Discount allocated proportionally by relative SSP. Hardware creates a day-1 contract asset until the first billing date.",
+
+  "start_date": "2025-07-01",
+  "end_date": "2027-06-30",
+  "currency": "USD",
+  "total_contract_value": 85000,
+
+  "_bundling_note": "Bella Cucina pays $85,000 for all three elements. Sum of standalone SSPs = $80,000. TCV exceeds SSP total by $5,000 — the bundle is priced at a slight premium (bundle discount of -$5k, i.e. customer pays more than standalone). Relative SSP method allocates TCV proportionally: no evidence the premium attaches to any single POB.",
+
+  "performance_obligations": [
+    {
+      "id": "POB-1",
+      "name": "POS Terminal Hardware",
+      "description": "10 Toast POS terminal units (touchscreen display, card reader, kitchen printer per location) delivered and installed across Bella Cucina's flagship and satellite locations. Customer takes title and bears obsolescence risk on delivery. Distinct from software — hardware can run a competitor's POS app.",
+      "recognition_type": "point_in_time",
+      "recognition_params": {
+        "event": "delivery_and_acceptance",
+        "estimated_completion_date": "2025-07-10"
+      },
+      "ssp": { "amount": 20000, "source": "observable", "basis": "Toast published hardware price list: $2,000/terminal × 10 units" }
+    },
+    {
+      "id": "POB-2",
+      "name": "Cloud POS Software Subscription",
+      "description": "24-month SaaS licence for Toast's cloud POS covering order management, kitchen display, online ordering integration, and loyalty programme. Bella Cucina simultaneously receives and consumes the benefit as Toast continuously operates and updates the platform.",
+      "recognition_type": "over_time",
+      "recognition_params": { "method": "straight_line" },
+      "ssp": { "amount": 48000, "source": "observable", "basis": "$2,000/month standalone software rate for 10-terminal restaurant groups × 24 months" }
+    },
+    {
+      "id": "POB-3",
+      "name": "24/7 Hardware & Software Support",
+      "description": "24-month priority support: 2-hour on-site response SLA, remote diagnostics, hardware swap programme, and dedicated account manager. Covers both hardware and software issues. Recognised over time as Bella Cucina stands ready to receive support throughout the term.",
+      "recognition_type": "over_time",
+      "recognition_params": { "method": "straight_line" },
+      "ssp": { "amount": 12000, "source": "observable", "basis": "$500/month standalone support rate for enterprise restaurant clients × 24 months" }
+    }
+  ],
+
+  "_ssp_allocation": {
+    "total_ssp": 80000,
+    "tcv": 85000,
+    "bundle_premium": 5000,
+    "_note": "TCV > SSP total: no discount to allocate. Each POB allocated in proportion to its SSP weight.",
+    "allocated": {
+      "POB-1_hardware":  "85,000 × (20,000 / 80,000) = $21,250",
+      "POB-2_software":  "85,000 × (48,000 / 80,000) = $51,000",
+      "POB-3_support":   "85,000 × (12,000 / 80,000) = $12,750"
+    }
+  },
+
+  "payment_schedule": [
+    { "invoice_date": "2025-07-01", "amount": 42500, "_note": "50% on contract signing (includes hardware + first-year prepay)" },
+    { "invoice_date": "2026-07-01", "amount": 42500, "_note": "50% at 12-month anniversary (second-year prepay)" }
+  ],
+
+  "_asc_842_lease_alternative": {
+    "_note": "If the terminals were leased to Bella Cucina instead of sold, ASC 842 would apply to the hardware component.",
+    "classification_test": "Finance lease if: (1) title transfers, (2) bargain purchase option, (3) lease term ≥ 75% of economic life, (4) PV of payments ≥ 90% fair value, or (5) specialised asset with no alternative use.",
+    "if_finance_lease": {
+      "hardware_component": "Removed from ASC 606 scope. Recognise net investment in lease + interest income under ASC 842-30.",
+      "software_and_support": "Remain in ASC 606 scope. Re-allocate TCV over POB-2 and POB-3 only using revised relative SSPs.",
+      "day_1_entry": "DR Net Investment in Lease $21,250 | CR Hardware Revenue $0 (moved to ASC 842)"
+    },
+    "practical_note": "Most restaurant POS arrangements are operating leases (short term, no title transfer); Toast's standard agreement sells hardware outright to avoid ASC 842 complexity."
+  },
+
+  "_key_asc606_considerations": [
+    "Hardware is distinct: Bella Cucina could run competitor software on the terminals, satisfying the 'capable of being distinct' criterion per ASC 606-10-25-19(a).",
+    "Hardware recognised on July 10 delivery creates a $21,250 contract asset (unbilled AR) because the July 1 invoice covers the full bundle including services not yet earned.",
+    "If hardware were proprietary (only works with Toast software), the distinctness test may fail — hardware would bundle with POB-2 and be recognised over the 24-month software term.",
+    "Day-1 journal entry: DR Contract Asset $21,250 | CR Revenue — POS Hardware $21,250 (revenue earned before billing).",
+    "Significant financing component unlikely: maximum payment gap between invoices is 12 months, within the practical expedient under ASC 606-10-32-18."
+  ]
+}
