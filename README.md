@@ -1,72 +1,117 @@
-# ASC 606 Revenue Recognition Calculator
+# ASC 606 Revenue Calculator
 
-A Python + Streamlit tool for automated ASC 606 revenue recognition analysis. Combines deterministic Python math for calculations with Google Gemini AI for judgment-layer reasoning across all five ASC 606 steps.
+A FastAPI + vanilla JS web app that automates ASC 606 revenue recognition analysis using a hybrid approach: Python for all deterministic math, Google Gemini AI for judgment-layer reasoning.
 
-## What It Does
+---
 
-- **Calculates** revenue recognition schedules, SSP-based allocation, variable consideration constraints, and contract asset / deferred revenue balances
-- **Reasons** through all five ASC 606 steps using Gemini AI, citing specific paragraph references (ASC 606-10-25-1, -10-32-11, etc.)
-- **Handles** common contract complexity: multi-POB bundles, usage-based pricing with tiers, variable consideration, contract modifications, and enterprise MSA hierarchies
+## Features
+
+- **Five-step ASC 606 analysis** with structured Python-calculated facts and Gemini AI narrative per step
+- **Revenue recognition schedule** — monthly revenue, billings, contract asset, and deferred revenue
+- **As-of-date snapshot** — recognized-to-date, deferred revenue, and contract asset as of any date
+- **SSP allocation** — relative SSP and residual methods
+- **Variable consideration** — expected value and most-likely-amount with constraint assessment
+- **Contract modifications** — prospective new contract, prospective remaining, and cumulative catch-up
+- **Seven realistic example scenarios** covering SaaS, ERP, fintech, ride-hailing, POS hardware, and enterprise banking
+- **Build-your-own contract** form for custom scenarios
+- **Journal entries** and balance sheet chart per period
+- **CSV export** of the full revenue schedule
+
+---
 
 ## Architecture
 
-| Layer | Responsibility |
-|---|---|
-| `utils/calculation_engine.py` | All deterministic math: SSP allocation, VC constraint, period schedules, contract asset / liability |
-| `utils/llm_judgments.py` | Gemini API calls for judgment: SSP estimation, VC constraint assessment, modification classification, 5-step narrative |
-| `app.py` | Streamlit UI: contract input, as-of date snapshot, 5-step reasoning cards |
+```
+main.py                     — FastAPI server (API routes + static file serving)
+utils/
+  calculation_engine.py     — All deterministic math (no LLM)
+  llm_judgments.py          — Gemini API calls for judgment and narrative
+static/
+  index.html                — Single-page app shell
+  app.js                    — All UI logic (vanilla JS)
+  app.css                   — Styles
+data/examples/              — Seven JSON scenario files (S1–S7)
+```
 
-## Scenarios
+**Python handles:** SSP allocation ratios, VC constraint math, monthly period schedules, cumulative contract asset / liability balances.
 
-Seven example contracts covering the main ASC 606 patterns:
+**Gemini handles:** SSP estimation when not observable, VC constraint assessment rationale, modification classification, and the 5-step professional narrative with ASC 606 paragraph citations.
 
-| # | Vendor → Customer | Pattern |
-|---|---|---|
-| S1 | CloudHR → Pacific Dental Partners | Simple SaaS, single POB, straight-line |
-| S2 | Veridian ERP → Hartwell Manufacturing | Multi-POB: SaaS + Implementation + Training, SSP allocation |
-| S3 | DataStream Analytics → FinEdge Capital | Variable consideration, expected value method, constraint |
-| S4 | NexusPlatform → Meridian Retail Group | Contract modification (prospective new contract) |
-| S5 | PayRoute → SprintPay Technologies | Pure usage-based, tiered pricing at Uber/Lyft scale (12M tx/month) |
-| S6 | ToastPOS → Bella Cucina Restaurant Group | Hardware + SaaS + Support bundle, point-in-time + over-time |
-| S7 | Axiom Cloud → GlobalBank Corp. | Enterprise MSA, 3 Order Forms, volume discount material right |
+---
 
 ## Setup
 
-**Requirements:** Python 3.10+, a Google Gemini API key ([get one free](https://aistudio.google.com/app/apikey))
+**Requirements:** Python 3.10+  ·  Google Gemini API key (free at [aistudio.google.com](https://aistudio.google.com/app/apikey))
 
 ```bash
-# 1. Clone and install
-git clone https://github.com/nguyehi1/Rev_Analysis.git
-cd Rev_Analysis
-python -m venv .venv && source .venv/bin/activate
+# 1. Clone
+git clone https://github.com/nguyehi1/revenue-analysis.git
+cd revenue-analysis
+
+# 2. Create virtual environment and install dependencies
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 
-# 2. Add your Gemini API key
-cp .env.example .env
-# Edit .env and set: GEMINI_API_KEY=your-key-here
+# 3. Add your Gemini API key
+echo "GEMINI_API_KEY=your-key-here" > .env
 
-# 3. Run
-streamlit run app.py
+# 4. Run
+uvicorn main:app --reload
 ```
+
+The app opens at `http://localhost:8000`.
+
+---
+
+## Example Scenarios
+
+| Scenario | Vendor → Customer | Key Concept |
+|---|---|---|
+| S1 | CloudHR → Pacific Dental Partners | Simple SaaS, single POB, straight-line over 12 months |
+| S2 | Veridian ERP → Hartwell Manufacturing | Multi-POB bundle (ERP + Implementation + Training), SSP allocation |
+| S3 | DataStream Analytics → FinEdge Capital | Variable consideration (API overage), expected value + constraint |
+| S4 | NexusPlatform → Meridian Retail Group | Contract modification — prospective new contract |
+| S5 | PayRoute → SprintPay Technologies | Pure usage-based, 3-tier pricing at Uber/Lyft scale (12M tx/month) |
+| S6 | ToastPOS → Bella Cucina Restaurant Group | Hardware (point-in-time) + SaaS + Support bundle, discount allocation |
+| S7 | Axiom Cloud → GlobalBank Corp. | Enterprise MSA, 3 Order Forms, volume discount material right |
+
+---
 
 ## Usage
 
-1. Open the app at `http://localhost:8501`
-2. In the **Load Example** tab, select a scenario (S1–S7) and click **Load & Calculate**
-3. The right panel shows:
-   - **As-of date snapshot**: revenue recognized to date, deferred revenue, contract asset, remaining
-   - **5-step ASC 606 cards**: Python-calculated facts + Gemini AI narrative per step
-   - **Balance Sheet & Journal Entries**: collapsed section with charts and per-period entries
-4. Alternatively, use the **Build Contract** tab to enter a custom contract
+1. **Load Example tab** — pick a scenario, review the info card, click **Load & Calculate**
+2. The right panel shows:
+   - **Recognition Timeline** — stacked bar chart of monthly revenue per POB
+   - **Current Position** — as-of-date progress card (deferred revenue, unbilled AR)
+   - **Audit Trail** — 5 ASC 606 step accordions with calculated facts + AI reasoning
+   - **Outputs** — Balance sheet chart and journal entries, collapsed at the bottom
+3. **Build Contract tab** — enter your own contract and click **Calculate Revenue Schedule**
+4. Download the full schedule as CSV via **Export CSV**
 
-## How the Hybrid Model Works
+---
 
-**Python handles all math** — allocation ratios, monthly schedules, running balances — so results are deterministic and auditable.
+## Project Structure
 
-**Gemini handles judgment** — the things that require professional interpretation:
-- Estimating SSP when not directly observable
-- Assessing whether variable consideration should be constrained
-- Classifying contract modification type
-- Writing the 5-step narrative with ASC 606 paragraph citations
-
-The AI reasoning is generated automatically when you click **Load & Calculate**.
+```
+Rev_Analysis/
+├── main.py                             # FastAPI application
+├── requirements.txt
+├── .env                                # API key (not committed)
+├── utils/
+│   ├── calculation_engine.py           # ASC 606 math engine
+│   └── llm_judgments.py               # Gemini AI judgment layer
+├── static/
+│   ├── index.html
+│   ├── app.js
+│   └── app.css
+└── data/
+    └── examples/
+        ├── s1_simple_saas.json
+        ├── s2_multi_pob_saas_impl_training.json
+        ├── s3_variable_consideration.json
+        ├── s4_contract_modification.json
+        ├── s5_usage_tiers.json
+        ├── s6_hardware_software_bundle.json
+        └── s7_enterprise_msa_hierarchy.json
+```

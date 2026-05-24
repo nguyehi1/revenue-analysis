@@ -208,7 +208,10 @@ def explain_steps(contract: Dict[str, Any], step_data: Dict[str, Any]) -> Dict[s
     """
     prompt = f"""You are a senior revenue recognition accountant writing a technical memo under ASC 606.
 
-Analyze the following contract and the Python-calculated step data. For each of the five ASC 606 steps, write 3-5 sentences of clear, specific reasoning explaining WHY — not just what the numbers are. Cite relevant ASC 606 paragraph references where they add precision.
+Analyze the following contract and the Python-calculated step data. For each of the five ASC 606 steps, produce a structured analysis with three parts:
+  - "finding": one-sentence conclusion for this step
+  - "reasoning": array of 2-4 concise, specific bullet points explaining WHY (each 10-20 words)
+  - "citation": the single most relevant ASC 606 paragraph (e.g. "ASC 606-10-25-1")
 
 CONTRACT:
 {json.dumps(contract, indent=2, default=str)}
@@ -217,19 +220,19 @@ STEP DATA (Python-calculated facts):
 {json.dumps(step_data, indent=2, default=str)}
 
 Guidelines per step:
-- Step 1: Address the five criteria of ASC 606-10-25-1 (approval, rights, payment terms, commercial substance, collectability). Flag if any criterion requires judgment.
-- Step 2: Apply the two-part distinctness test (ASC 606-10-25-19): (a) capable of being distinct — customer can benefit from it on its own; (b) distinct in context — not highly interrelated with other promises. State conclusion for each POB.
-- Step 3: Identify all components of the transaction price. For variable consideration, state the estimation method and constraint rationale (ASC 606-10-32-11: probable significant reversal). Note if a significant financing component exists (ASC 606-10-32-15).
-- Step 4: State the allocation method chosen (relative SSP or residual per ASC 606-10-32-31 through 32-35). Explain why. If SSPs were estimated, note the approach. Quantify any discount and explain its allocation.
-- Step 5: For each POB, state the recognition criterion: over time (at least one of three criteria per ASC 606-10-25-27) or point-in-time (ASC 606-10-25-30). Explain why the chosen pattern applies.
+- Step 1: finding = contract validity conclusion. Points: address each of the five criteria (ASC 606-10-25-1): approval, rights, payment terms, commercial substance, collectability. Flag any that require judgment.
+- Step 2: finding = number and names of distinct obligations. Points: apply the two-part distinctness test (ASC 606-10-25-19) for each POB — capable of being distinct + distinct in context.
+- Step 3: finding = transaction price amount and whether it includes variable consideration. Points: identify fixed vs. variable components, constraint rationale (ASC 606-10-32-11), financing component assessment (ASC 606-10-32-15).
+- Step 4: finding = allocation method and total allocated. Points: reason for method chosen (relative SSP vs. residual, ASC 606-10-32-31), SSP sources used, any discount and how it is spread.
+- Step 5: finding = recognition pattern(s) and key amounts. Points: for each POB state which over-time criterion applies (ASC 606-10-25-27) or why point-in-time (ASC 606-10-25-30), and the resulting schedule.
 
-Return valid JSON only — no prose outside the JSON:
+Return valid JSON only — no prose outside the JSON. Do not nest JSON inside string values:
 {{
-  "step_1": "<3-5 sentences>",
-  "step_2": "<3-5 sentences>",
-  "step_3": "<3-5 sentences>",
-  "step_4": "<3-5 sentences>",
-  "step_5": "<3-5 sentences>"
+  "step_1": {{"finding": "...", "reasoning": ["...", "...", "..."], "citation": "ASC 606-10-25-1"}},
+  "step_2": {{"finding": "...", "reasoning": ["...", "...", "..."], "citation": "ASC 606-10-25-19"}},
+  "step_3": {{"finding": "...", "reasoning": ["...", "...", "..."], "citation": "ASC 606-10-32-11"}},
+  "step_4": {{"finding": "...", "reasoning": ["...", "...", "..."], "citation": "ASC 606-10-32-31"}},
+  "step_5": {{"finding": "...", "reasoning": ["...", "...", "..."], "citation": "ASC 606-10-25-27"}}
 }}"""
 
     try:

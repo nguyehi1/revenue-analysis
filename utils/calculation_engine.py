@@ -126,14 +126,7 @@ def _ob_revenue_by_period(
     n = len(months)
     schedule: Dict[str, float] = {m.strftime("%Y-%m"): 0.0 for m in months}
 
-    if recognition == "over_time":
-        monthly = round(allocated / n, 2)
-        # Push any rounding residual into the last period
-        remainder = round(allocated - monthly * (n - 1), 2)
-        for idx, m in enumerate(months):
-            schedule[m.strftime("%Y-%m")] = remainder if idx == n - 1 else monthly
-
-    elif recognition in ("point_in_time", "upfront"):
+    if recognition in ("point_in_time", "upfront"):
         date_str = params.get("estimated_completion_date")
         if date_str and recognition == "point_in_time":
             event_date = _parse_date(date_str)
@@ -142,23 +135,17 @@ def _ob_revenue_by_period(
                     schedule[m.strftime("%Y-%m")] = round(allocated, 2)
                     break
             else:
-                # Event outside contract range → fall back to first period
+                # Event outside contract range → first period
                 if months:
                     schedule[months[0].strftime("%Y-%m")] = round(allocated, 2)
         else:
             if months:
                 schedule[months[0].strftime("%Y-%m")] = round(allocated, 2)
-
-    elif recognition == "usage_based":
-        # Allocated value is the period estimate; spread evenly as best estimate
-        monthly = round(allocated / n, 2)
-        remainder = round(allocated - monthly * (n - 1), 2)
-        for idx, m in enumerate(months):
-            schedule[m.strftime("%Y-%m")] = remainder if idx == n - 1 else monthly
-
     else:
-        logger.warning("Unknown recognition_type '%s' — defaulting to over_time", recognition)
-        monthly = round(allocated / n, 2)
+        # over_time, usage_based, and unknown types: spread evenly (straight-line)
+        if recognition not in ("over_time", "usage_based"):
+            logger.warning("Unknown recognition_type '%s' — defaulting to straight-line", recognition)
+        monthly   = round(allocated / n, 2)
         remainder = round(allocated - monthly * (n - 1), 2)
         for idx, m in enumerate(months):
             schedule[m.strftime("%Y-%m")] = remainder if idx == n - 1 else monthly

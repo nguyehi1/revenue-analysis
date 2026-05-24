@@ -8,8 +8,8 @@
   "start_date": "2026-01-01",
   "end_date": "2026-12-31",
   "currency": "USD",
-  "total_contract_value": 0,
-  "_note_on_tcv": "TCV is $0 at inception — all consideration is variable. The constrained VC estimate ($1,230,000 annual) is used for balance-sheet and disclosure purposes.",
+  "total_contract_value": 1230000,
+  "_note_on_tcv": "Nominal TCV at inception is $0 (100% variable). Shown here as the constrained VC estimate ($1,230,000 annual) per ASC 606 — this is the amount used for balance-sheet and disclosure purposes.",
 
   "performance_obligations": [
     {

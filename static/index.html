@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASC 606 Revenue Calculator</title>
+  <link rel="stylesheet" href="/static/app.css" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+  <div class="layout">
+
+    <!-- ── Sidebar ──────────────────────────────────────────── -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">ASC 606</div>
+        <div class="logo-sub">Revenue Calculator</div>
+      </div>
+
+      <!-- Input mode: tabs + panels -->
+      <div id="sidebar-input">
+        <nav class="tabs">
+          <button class="tab active" data-tab="examples">Load Example</button>
+          <button class="tab" data-tab="build">Build Contract</button>
+        </nav>
+
+        <div class="tab-panel" id="panel-examples">
+          <select id="example-select" class="select"></select>
+          <div id="scenario-card" class="scenario-card"></div>
+          <button id="btn-load" class="btn btn-primary btn-full">Load &amp; Calculate</button>
+        </div>
+
+        <div class="tab-panel hidden" id="panel-build">
+          <div class="form-row">
+            <div class="form-field">
+              <label>Contract ID</label>
+              <input type="text" id="b-id" value="C-NEW" class="input" />
+            </div>
+            <div class="form-field">
+              <label>Currency</label>
+              <select id="b-currency" class="select">
+                <option>USD</option><option>EUR</option><option>GBP</option><option>CAD</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label>Start Date</label>
+              <input type="date" id="b-start" class="input" />
+            </div>
+            <div class="form-field">
+              <label>End Date</label>
+              <input type="date" id="b-end" class="input" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Contract Value ($)</label>
+            <input type="number" id="b-tcv" value="0" min="0" step="1000" class="input" />
+          </div>
+
+          <div class="section-label">Performance Obligations</div>
+          <div id="pob-container"></div>
+          <div class="form-row" style="margin-top:4px">
+            <button class="btn btn-outline" onclick="addPOB()">+ Add POB</button>
+            <button class="btn btn-outline" id="btn-rem-pob" onclick="removePOB()" disabled>− Remove POB</button>
+          </div>
+
+          <div class="section-label">Payment Schedule</div>
+          <div id="payment-container"></div>
+          <div class="form-row" style="margin-top:4px">
+            <button class="btn btn-outline" onclick="addPayment()">+ Add Payment</button>
+            <button class="btn btn-outline" id="btn-rem-pay" onclick="removePayment()" disabled>− Remove Payment</button>
+          </div>
+
+          <button id="btn-build" class="btn btn-primary btn-full" style="margin-top:16px">
+            Calculate Revenue Schedule
+          </button>
+          <div id="build-errors" class="error-list hidden"></div>
+        </div>
+      </div>
+
+      <!-- Results mode: navigation -->
+      <div id="sidebar-results" class="hidden">
+        <!-- injected by JS -->
+      </div>
+    </aside>
+
+    <!-- ── Results ───────────────────────────────────────────── -->
+    <main id="results" class="results">
+      <div class="empty-state">
+        <div>
+          <p>Select a scenario from <strong>Load Example</strong><br/>
+          or build your own in <strong>Build Contract</strong>,<br/>
+          then click Calculate.</p>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

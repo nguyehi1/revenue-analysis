@@ -10,11 +10,9 @@ __pycache__/
 *.so
 .Python
 venv/
+.venv/
 env/
 ENV/
-
-# Streamlit
-.streamlit/
 
 # Data files
 data/contracts/*.pdf
