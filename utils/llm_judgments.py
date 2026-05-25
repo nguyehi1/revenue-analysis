@@ -28,13 +28,12 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 def _call_gemini(prompt: str) -> str:
-    import google.generativeai as genai
+    from google import genai
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         raise EnvironmentError("GEMINI_API_KEY is not set. Add it to your .env file.")
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel("gemini-2.5-flash")
-    response = model.generate_content(prompt)
+    client = genai.Client(api_key=api_key)
+    response = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
     return response.text.strip()
 
 
