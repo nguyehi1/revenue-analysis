@@ -29,10 +29,6 @@ const STEP_TITLES = {
 
 let _examples   = [];
 let _currentData = null;
-let _pobIndices = [0];
-let _payIndices = [0];
-let _pobCounter = 1;
-let _payCounter = 1;
 let _scrollObserver = null;
 
 // ── Init ─────────────────────────────────────────────────────────────────────
@@ -40,8 +36,8 @@ let _scrollObserver = null;
 document.addEventListener('DOMContentLoaded', () => {
   setupTabs();
   setDefaultDates();
-  addPOBRow(0);
-  addPaymentRow(0);
+  addPOBRow();
+  addPaymentRow();
   fetchExamples();
   document.getElementById('btn-load').addEventListener('click', onLoadExample);
   document.getElementById('btn-build').addEventListener('click', onBuildCalculate);
@@ -123,9 +119,8 @@ function navTo(section, el) {
 
   const m = section.match(/^step-(\d+)$/);
   if (m) {
-    const num = parseInt(m[1]);
-    const body = document.getElementById(`step-body-${num}`);
-    if (body && !body.classList.contains('open')) toggleStep(num);
+    const details = document.getElementById(`step-body-${m[1]}`);
+    if (details && !details.open) details.open = true;
   }
 }
 
@@ -201,98 +196,94 @@ function setDefaultDates() {
 }
 
 function addPOB() {
-  const idx = _pobCounter++;
-  _pobIndices.push(idx);
-  addPOBRow(idx);
+  addPOBRow();
   updateFormButtons();
 }
 
 function removePOB() {
-  if (_pobIndices.length <= 1) return;
-  const idx = _pobIndices.pop();
-  document.getElementById(`pob-${idx}`)?.remove();
+  const rows = document.querySelectorAll('#pob-container .pob-card');
+  if (rows.length <= 1) return;
+  rows[rows.length - 1].remove();
   updateFormButtons();
 }
 
-function addPOBRow(idx) {
+function addPOBRow() {
   const div = document.createElement('div');
   div.className = 'pob-card';
-  div.id = `pob-${idx}`;
   div.innerHTML = `
-    <div class="pob-label" id="pob-label-${idx}">POB ${_pobIndices.indexOf(idx) + 1}</div>
+    <div class="pob-label">POB</div>
     <div class="form-field">
       <label>Name</label>
-      <input type="text" class="input" id="p-name-${idx}" placeholder="e.g. SaaS Platform Access" />
+      <input type="text" class="input" data-field="name" placeholder="e.g. SaaS Platform Access" />
     </div>
     <div class="form-row">
       <div class="form-field">
         <label>Recognition type</label>
-        <select class="select" id="p-rec-${idx}" onchange="toggleCompletionDate(${idx})">
+        <select class="select" data-field="rec" onchange="toggleCompletionDate(this)">
           ${REC_TYPES.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}
         </select>
       </div>
       <div class="form-field">
         <label>SSP ($)</label>
-        <input type="number" class="input" id="p-ssp-${idx}" min="0" step="1000" value="0" />
+        <input type="number" class="input" data-field="ssp" min="0" step="1000" value="0" />
       </div>
     </div>
     <div class="form-field">
       <label>SSP Source</label>
-      <select class="select" id="p-src-${idx}">
+      <select class="select" data-field="src">
         ${SSP_SOURCES.map(s => `<option value="${s.value}">${s.label}</option>`).join('')}
       </select>
     </div>
-    <div class="form-field hidden" id="p-date-wrap-${idx}">
+    <div class="form-field hidden" data-field="date-wrap">
       <label>Completion Date</label>
-      <input type="date" class="input" id="p-date-${idx}" />
+      <input type="date" class="input" data-field="date" />
     </div>
   `;
   document.getElementById('pob-container').appendChild(div);
 }
 
-function toggleCompletionDate(idx) {
-  const rec = document.getElementById(`p-rec-${idx}`)?.value;
-  document.getElementById(`p-date-wrap-${idx}`)?.classList.toggle('hidden', rec !== 'point_in_time');
+function toggleCompletionDate(selectEl) {
+  selectEl.closest('.pob-card').querySelector('[data-field="date-wrap"]')
+    ?.classList.toggle('hidden', selectEl.value !== 'point_in_time');
 }
 
 function addPayment() {
-  const idx = _payCounter++;
-  _payIndices.push(idx);
-  addPaymentRow(idx);
+  addPaymentRow();
   updateFormButtons();
 }
 
 function removePayment() {
-  if (_payIndices.length <= 1) return;
-  const idx = _payIndices.pop();
-  document.getElementById(`pay-${idx}`)?.remove();
+  const rows = document.querySelectorAll('#payment-container .pay-row');
+  if (rows.length <= 1) return;
+  rows[rows.length - 1].remove();
   updateFormButtons();
 }
 
-function addPaymentRow(idx) {
+function addPaymentRow() {
   const div = document.createElement('div');
   div.className = 'pay-row';
-  div.id = `pay-${idx}`;
   const start = document.getElementById('b-start')?.value || '';
   div.innerHTML = `
     <div class="form-field">
       <label>Invoice Date</label>
-      <input type="date" class="input" id="pay-dt-${idx}" value="${start}" />
+      <input type="date" class="input" data-field="date" value="${start}" />
     </div>
     <div class="form-field">
       <label>Amount ($)</label>
-      <input type="number" class="input" id="pay-amt-${idx}" min="0" step="1000" value="0" />
+      <input type="number" class="input" data-field="amount" min="0" step="1000" value="0" />
     </div>
   `;
   document.getElementById('payment-container').appendChild(div);
 }
 
 function updateFormButtons() {
-  document.getElementById('btn-rem-pob').disabled = _pobIndices.length <= 1;
-  document.getElementById('btn-rem-pay').disabled = _payIndices.length <= 1;
-  _pobIndices.forEach((idx, i) => {
-    const el = document.getElementById(`pob-label-${idx}`);
-    if (el) el.textContent = `POB ${i + 1}`;
+  const pobRows = document.querySelectorAll('#pob-container .pob-card');
+  const payRows = document.querySelectorAll('#payment-container .pay-row');
+  document.getElementById('btn-rem-pob').disabled = pobRows.length <= 1;
+  document.getElementById('btn-rem-pay').disabled = payRows.length <= 1;
+  pobRows.forEach((row, i) => {
+    const label = row.querySelector('.pob-label');
+    if (label) label.textContent = `POB ${i + 1}`;
   });
 }
 
@@ -308,13 +299,13 @@ function buildContractFromForm() {
   if (tcv <= 0) errors.push('Contract value must be greater than 0.');
 
   const pobs = [];
-  for (const idx of _pobIndices) {
-    const name = (document.getElementById(`p-name-${idx}`)?.value || '').trim();
-    if (!name) { errors.push(`POB ${_pobIndices.indexOf(idx) + 1} needs a name.`); continue; }
-    const rec   = document.getElementById(`p-rec-${idx}`)?.value || 'over_time';
-    const ssp   = parseFloat(document.getElementById(`p-ssp-${idx}`)?.value) || 0;
-    const src   = document.getElementById(`p-src-${idx}`)?.value || 'observable';
-    const pdate = document.getElementById(`p-date-${idx}`)?.value;
+  document.querySelectorAll('#pob-container .pob-card').forEach((row, i) => {
+    const name  = (row.querySelector('[data-field="name"]')?.value || '').trim();
+    if (!name) { errors.push(`POB ${i + 1} needs a name.`); return; }
+    const rec   = row.querySelector('[data-field="rec"]')?.value || 'over_time';
+    const ssp   = parseFloat(row.querySelector('[data-field="ssp"]')?.value) || 0;
+    const src   = row.querySelector('[data-field="src"]')?.value || 'observable';
+    const pdate = row.querySelector('[data-field="date"]')?.value;
     const ob    = {
       id: `POB-${pobs.length + 1}`, name, recognition_type: rec,
       recognition_params: {},
@@ -322,14 +313,14 @@ function buildContractFromForm() {
     };
     if (rec === 'point_in_time' && pdate) ob.recognition_params.estimated_completion_date = pdate;
     pobs.push(ob);
-  }
+  });
 
   const payments = [];
-  for (const idx of _payIndices) {
-    const dt  = document.getElementById(`pay-dt-${idx}`)?.value;
-    const amt = parseFloat(document.getElementById(`pay-amt-${idx}`)?.value) || 0;
+  document.querySelectorAll('#payment-container .pay-row').forEach(row => {
+    const dt  = row.querySelector('[data-field="date"]')?.value;
+    const amt = parseFloat(row.querySelector('[data-field="amount"]')?.value) || 0;
     if (amt > 0 && dt) payments.push({ invoice_date: dt, amount: amt });
-  }
+  });
 
   const errDiv = document.getElementById('build-errors');
   if (errors.length) {
@@ -349,56 +340,53 @@ async function onBuildCalculate() {
 
 // ── Edit: pre-fill form from current contract ─────────────────────────────────
 
-function onEdit() {
-  const contract = _currentData?.contract;
-  if (!contract) return;
-
-  showInputSidebar();
-  switchTab('build');
-
-  // Basic fields
+function populateForm(contract) {
   document.getElementById('b-id').value       = contract.contract_id || '';
   document.getElementById('b-currency').value = contract.currency || 'USD';
   document.getElementById('b-start').value    = contract.start_date || '';
   document.getElementById('b-end').value      = contract.end_date || '';
   document.getElementById('b-tcv').value      = contract.total_contract_value || 0;
 
-  // Rebuild POBs
   document.getElementById('pob-container').innerHTML = '';
-  _pobIndices = []; _pobCounter = 0;
   const pobs = contract.performance_obligations || [];
-  for (let i = 0; i < pobs.length; i++) {
-    _pobIndices.push(_pobCounter);
-    addPOBRow(_pobCounter++);
-    const pob = pobs[i]; const idx = _pobIndices[i];
-    document.getElementById(`p-name-${idx}`).value = pob.name || '';
-    document.getElementById(`p-rec-${idx}`).value  = pob.recognition_type || 'over_time';
-    document.getElementById(`p-ssp-${idx}`).value  = pob.ssp?.amount || 0;
-    document.getElementById(`p-src-${idx}`).value  = pob.ssp?.source || 'observable';
+  pobs.forEach(pob => {
+    addPOBRow();
+    const row = document.querySelector('#pob-container .pob-card:last-child');
+    row.querySelector('[data-field="name"]').value = pob.name || '';
+    const recEl = row.querySelector('[data-field="rec"]');
+    recEl.value = pob.recognition_type || 'over_time';
+    row.querySelector('[data-field="ssp"]').value  = pob.ssp?.amount || 0;
+    row.querySelector('[data-field="src"]').value  = pob.ssp?.source || 'observable';
     if (pob.recognition_type === 'point_in_time') {
-      toggleCompletionDate(idx);
+      toggleCompletionDate(recEl);
       if (pob.recognition_params?.estimated_completion_date)
-        document.getElementById(`p-date-${idx}`).value = pob.recognition_params.estimated_completion_date;
+        row.querySelector('[data-field="date"]').value = pob.recognition_params.estimated_completion_date;
     }
-  }
+  });
+  if (!pobs.length) addPOBRow();
 
-  // Rebuild payments
   document.getElementById('payment-container').innerHTML = '';
-  _payIndices = []; _payCounter = 0;
   const payments = contract.payment_schedule || [];
-  for (let i = 0; i < payments.length; i++) {
-    _payIndices.push(_payCounter);
-    addPaymentRow(_payCounter++);
-    const pay = payments[i]; const idx = _payIndices[i];
-    document.getElementById(`pay-dt-${idx}`).value  = pay.invoice_date || '';
-    // "variable" is not a valid number — fall back to the estimated value so the
-    // payment survives a round-trip through the build form without being dropped.
-    const payAmt = pay.amount === 'variable' ? (pay.estimated || 0) : (pay.amount || 0);
-    document.getElementById(`pay-amt-${idx}`).value = payAmt;
-  }
-  if (payments.length === 0) { _payIndices = [0]; addPaymentRow(0); _payCounter = 1; }
+  payments.forEach(pay => {
+    addPaymentRow();
+    const row = document.querySelector('#payment-container .pay-row:last-child');
+    row.querySelector('[data-field="date"]').value   = pay.invoice_date || '';
+    // "variable" is not a valid number — fall back to estimated so the payment
+    // survives a form round-trip without being silently dropped.
+    row.querySelector('[data-field="amount"]').value =
+      pay.amount === 'variable' ? (pay.estimated || 0) : (pay.amount || 0);
+  });
+  if (!payments.length) addPaymentRow();
 
   updateFormButtons();
+}
+
+function onEdit() {
+  const contract = _currentData?.contract;
+  if (!contract) return;
+  showInputSidebar();
+  switchTab('build');
+  populateForm(contract);
 }
 
 // ── Calculate ─────────────────────────────────────────────────────────────────
@@ -582,8 +570,8 @@ function stepAccordion(num, conclusion, step_data, result, obligations) {
   const body = stepBody(num, step_data, result, obligations);
   return `
     <section id="sec-step-${num}">
-      <div class="step-accordion">
-        <div class="step-acc-header" id="step-hdr-${num}" onclick="toggleStep(${num})">
+      <details class="step-accordion" id="step-body-${num}">
+        <summary>
           <div class="step-num">${num}</div>
           <div class="step-header-text">
             <div class="step-title-text">${STEP_TITLES[num]}</div>
@@ -592,25 +580,16 @@ function stepAccordion(num, conclusion, step_data, result, obligations) {
           <div class="step-ai-status" id="step-ai-status-${num}">
             <div class="spinner"></div>
           </div>
-          <div class="step-chevron">›</div>
-        </div>
-        <div class="step-acc-body" id="step-body-${num}">
+        </summary>
+        <div class="step-acc-body">
           ${body}
           <div class="ai-badge ai-badge--loading" id="ai-step_${num}">
             <div class="spinner"></div> Generating AI reasoning…
           </div>
         </div>
-      </div>
+      </details>
     </section>
   `;
-}
-
-function toggleStep(num) {
-  const hdr  = document.getElementById(`step-hdr-${num}`);
-  const body = document.getElementById(`step-body-${num}`);
-  const open = body.classList.contains('open');
-  body.classList.toggle('open', !open);
-  hdr.classList.toggle('open', !open);
 }
 
 function stepBody(num, step_data, result, obligations) {

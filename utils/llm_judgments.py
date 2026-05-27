@@ -20,6 +20,7 @@ from typing import Dict, Any, List, Optional
 import json
 import logging
 import os
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -38,32 +39,14 @@ def _call_gemini(prompt: str) -> str:
 
 
 def _parse_json(text: str) -> Dict[str, Any]:
-    """Extract JSON from a Gemini response that may include prose."""
-    text = text.strip()
-    for start, end in [("```json", "```"), ("```", "```"), ("{", None)]:
-        idx = text.find(start)
-        if idx == -1:
-            continue
-        if end:
-            end_idx = text.find(end, idx + len(start))
-            candidate = text[idx + len(start): end_idx].strip() if end_idx != -1 else ""
-        else:
-            brace_count = 0
-            candidate = ""
-            for i, ch in enumerate(text[idx:], idx):
-                if ch == "{":
-                    brace_count += 1
-                elif ch == "}":
-                    brace_count -= 1
-                    if brace_count == 0:
-                        candidate = text[idx: i + 1]
-                        break
-        if candidate:
-            try:
-                return json.loads(candidate)
-            except json.JSONDecodeError:
-                continue
-    raise ValueError(f"Could not parse JSON from response: {text[:200]}")
+    m = re.search(r'\{[\s\S]*\}', text.strip())
+    if not m:
+        raise ValueError(f"No JSON object found in response: {text[:200]}")
+    return json.loads(m.group())
+
+
+def _call_and_parse(prompt: str) -> Dict[str, Any]:
+    return _parse_json(_call_gemini(prompt))
 
 
 # ---------------------------------------------------------------------------
@@ -99,8 +82,7 @@ Return JSON only:
 }}"""
 
     try:
-        raw = _call_gemini(prompt)
-        result = _parse_json(raw)
+        result = _call_and_parse(prompt)
         logger.info("SSP estimate for '%s': $%s", pob_name, result.get("value"))
         return result
     except Exception as e:
@@ -146,8 +128,7 @@ Return JSON only:
 }}"""
 
     try:
-        raw = _call_gemini(prompt)
-        result = _parse_json(raw)
+        result = _call_and_parse(prompt)
         logger.info("VC constraint assessed: $%s", result.get("value"))
         return result
     except Exception as e:
@@ -185,8 +166,7 @@ Return JSON only:
 }}"""
 
     try:
-        raw = _call_gemini(prompt)
-        result = _parse_json(raw)
+        result = _call_and_parse(prompt)
         logger.info("Modification classified as: %s", result.get("value"))
         return result
     except Exception as e:
@@ -235,8 +215,7 @@ Return valid JSON only — no prose outside the JSON. Do not nest JSON inside st
 }}"""
 
     try:
-        raw = _call_gemini(prompt)
-        result = _parse_json(raw)
+        result = _call_and_parse(prompt)
         logger.info("5-step reasoning generated successfully")
         return result
     except Exception as e:
