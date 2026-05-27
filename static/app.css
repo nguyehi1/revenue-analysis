@@ -257,19 +257,13 @@ a { color: inherit; text-decoration: none; }
   margin-bottom: 8px; overflow: hidden;
 }
 
-.step-accordion > summary {
+.step-acc-header {
   display: flex; align-items: center; gap: 12px;
   padding: 14px 16px; cursor: pointer; background: #fff;
-  transition: background 0.12s; user-select: none; list-style: none;
+  transition: background 0.12s; user-select: none;
 }
-.step-accordion > summary::-webkit-details-marker { display: none; }
-.step-accordion > summary:hover { background: var(--bg-subtle); }
-.step-accordion[open] > summary { background: var(--bg-subtle); border-bottom: 1px solid var(--border); }
-.step-accordion > summary::after {
-  content: '›'; color: var(--muted); font-size: 18px; line-height: 1;
-  transition: transform 0.2s; flex-shrink: 0;
-}
-.step-accordion[open] > summary::after { transform: rotate(90deg); }
+.step-acc-header:hover { background: var(--bg-subtle); }
+.step-acc-header.open  { background: var(--bg-subtle); border-bottom: 1px solid var(--border); }
 
 .step-num {
   width: 26px; height: 26px; border-radius: 50%; background: var(--primary);
@@ -290,7 +284,16 @@ a { color: inherit; text-decoration: none; }
 .step-ai-status .spinner { width: 14px; height: 14px; }
 .step-ai-check  { color: var(--success); font-size: 14px; font-weight: 700; }
 
-.step-acc-body { padding: 20px; }
+.step-chevron {
+  color: var(--muted); font-size: 18px; line-height: 1;
+  transition: transform 0.2s; flex-shrink: 0;
+}
+.step-acc-header.open .step-chevron { transform: rotate(90deg); }
+
+.step-acc-body {
+  display: none; padding: 20px;
+}
+.step-acc-body.open { display: block; }
 
 /* ── AI badge ───────────────────────────────────────────────────── */
 .ai-badge {

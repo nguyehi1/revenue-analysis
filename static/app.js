@@ -119,8 +119,9 @@ function navTo(section, el) {
 
   const m = section.match(/^step-(\d+)$/);
   if (m) {
-    const details = document.getElementById(`step-body-${m[1]}`);
-    if (details && !details.open) details.open = true;
+    const num  = parseInt(m[1]);
+    const body = document.getElementById(`step-body-${num}`);
+    if (body && !body.classList.contains('open')) toggleStep(num);
   }
 }
 
@@ -479,7 +480,7 @@ function renderResults(contract, result, step_data) {
     <!-- Audit trail -->
     <div class="audit-divider" style="margin-top:36px">
       <div class="audit-divider-line"></div>
-      <div class="audit-divider-text">How we got here</div>
+      <div class="audit-divider-text">Revenue recognition analysis</div>
       <div class="audit-divider-line"></div>
     </div>
 
@@ -570,8 +571,8 @@ function stepAccordion(num, conclusion, step_data, result, obligations) {
   const body = stepBody(num, step_data, result, obligations);
   return `
     <section id="sec-step-${num}">
-      <details class="step-accordion" id="step-body-${num}">
-        <summary>
+      <div class="step-accordion">
+        <div class="step-acc-header" id="step-hdr-${num}" onclick="toggleStep(${num})">
           <div class="step-num">${num}</div>
           <div class="step-header-text">
             <div class="step-title-text">${STEP_TITLES[num]}</div>
@@ -580,16 +581,25 @@ function stepAccordion(num, conclusion, step_data, result, obligations) {
           <div class="step-ai-status" id="step-ai-status-${num}">
             <div class="spinner"></div>
           </div>
-        </summary>
-        <div class="step-acc-body">
+          <div class="step-chevron">›</div>
+        </div>
+        <div class="step-acc-body" id="step-body-${num}">
           ${body}
           <div class="ai-badge ai-badge--loading" id="ai-step_${num}">
             <div class="spinner"></div> Generating AI reasoning…
           </div>
         </div>
-      </details>
+      </div>
     </section>
   `;
+}
+
+function toggleStep(num) {
+  const hdr  = document.getElementById(`step-hdr-${num}`);
+  const body = document.getElementById(`step-body-${num}`);
+  const open = body.classList.contains('open');
+  body.classList.toggle('open', !open);
+  hdr.classList.toggle('open', !open);
 }
 
 function stepBody(num, step_data, result, obligations) {
