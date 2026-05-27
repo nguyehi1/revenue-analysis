@@ -45,6 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchExamples();
   document.getElementById('btn-load').addEventListener('click', onLoadExample);
   document.getElementById('btn-build').addEventListener('click', onBuildCalculate);
+  // Prevent scroll wheel from silently changing number inputs while scrolling the sidebar
+  document.getElementById('panel-build').addEventListener('wheel', e => {
+    if (e.target.type === 'number') e.preventDefault();
+  }, { passive: false });
 });
 
 // ── Tabs ─────────────────────────────────────────────────────────────────────
@@ -387,7 +391,10 @@ function onEdit() {
     addPaymentRow(_payCounter++);
     const pay = payments[i]; const idx = _payIndices[i];
     document.getElementById(`pay-dt-${idx}`).value  = pay.invoice_date || '';
-    document.getElementById(`pay-amt-${idx}`).value = pay.amount || 0;
+    // "variable" is not a valid number — fall back to the estimated value so the
+    // payment survives a round-trip through the build form without being dropped.
+    const payAmt = pay.amount === 'variable' ? (pay.estimated || 0) : (pay.amount || 0);
+    document.getElementById(`pay-amt-${idx}`).value = payAmt;
   }
   if (payments.length === 0) { _payIndices = [0]; addPaymentRow(0); _payCounter = 1; }
 
